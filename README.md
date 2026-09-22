@@ -136,6 +136,42 @@ Open:
 http://127.0.0.1:8000/
 ```
 
+### Administrative Access
+
+After running the database migrations, create a Django superuser for administrative access.
+
+If you are using an activated Python virtual environment:
+
+```bash
+python manage.py createsuperuser
+```
+
+If you are using `uv`:
+
+```bash
+uv run python manage.py createsuperuser
+```
+
+The command will prompt for the fields required by the custom `Account` model.
+
+`Client status` corresponds to the custom `Account.is_client` field.
+For a superuser intended for project administration, enter:
+
+```text
+False
+```
+
+The `is_client` field is separate from Django's `is_staff` and `is_superuser` permissions.
+The `createsuperuser` command creates the account with the staff and superuser permissions required for administrative access.
+
+After starting the development server, open the Django administration interface at:
+
+```text
+http://127.0.0.1:8000/admin/
+```
+
+Sign in using the superuser credentials you created.
+
 ## Engineering Decisions
 
 Significant engineering decisions are documented in the companion [Event Volunteer Hub Engineering Decision Log](https://github.com/Community-TOS-Projects/event-volunteer-edl).
