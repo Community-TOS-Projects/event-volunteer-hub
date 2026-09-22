@@ -1,155 +1,171 @@
-# MeetHub
+# Event Volunteer Hub
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b0d1d86ada1848968faf19b9904f1382)](https://app.codacy.com/app/iyanuashiri/meethub?utm_source=github.com&utm_medium=referral&utm_content=iyanuashiri/meethub&utm_campaign=badger)
+Event Volunteer Hub is an open-source project for helping nonprofit organizations coordinate volunteers for short-term and community events.
+The project is intended to support volunteer recruitment, scheduling, communication, roster management, and related event-coordination needs while remaining adaptable for different nonprofit workflows.
 
-MeetHub is an open-source event management system built with Python and the Django Web Framework. It's designed to help people create, discover, and manage events, fostering community and connection. Whether you're organizing a tech meetup, a book club, or a hiking trip, MeetHub provides the tools to bring people together. As a learning platform, it offers a practical, real-world codebase for developers looking to gain experience with Django, containerization, and modern web development practices.
+## Project Status
 
+Event Volunteer Hub is under active development and is not currently a production-ready volunteer management system.
+The project begins from an inherited event-management application and will be evaluated, stabilized, documented, and extended incrementally.
 
-## ✨ Features
+The repository was initialized from the open-source [MeetHub](https://github.com/iyanuashiri/meethub) project.
+MeetHub provides an existing Django application foundation with user accounts, authentication, event creation, and other event-management capabilities.
+Event Volunteer Hub is a separate project with a different purpose and development direction.
 
-*   **📅 Event Creation & Management:** Easily create, update, and manage your own events.
-*   **🔍 Event Discovery:** Explore a list of upcoming events to join.
-*   **👥 User Profiles:** Create a personal profile and see who's attending events.
-*   **💬 Event Discussions:** Comment on events to ask questions and connect with attendees.
-*   **🔔 Real-time Notifications:** Get notified about relevant activities.
-*   **📱 Responsive Design:** A clean, modern UI that works on any device.
+Some internal source-code names may continue to use `meethub` while the inherited application is evaluated.
+Those names do not indicate that this repository is the original MeetHub project.
 
-## Screenshots
+## Project Goals
 
-<details>
-<summary>Click to view screenshots</summary>
+The long-term project is intended to help nonprofit and community organizations:
 
-### Landing Page
-![landing page](https://res.cloudinary.com/iyanuashiri/image/upload/v1752105312/MeetHub-Connect-Meet-Grow-07-10-2025_12_23_AM_zdofem.png)
+- create and manage short-term community events;
+- communicate volunteer opportunities and needs;
+- coordinate volunteers, shifts, assignments, and rosters;
+- identify filled and unfilled volunteer needs;
+- reduce administrative work created by disconnected tools; and
+- maintain an open-source system that future contributors can adapt and extend.
 
-### Explore Page
-![explore page](https://res.cloudinary.com/iyanuashiri/image/upload/v1752105309/Discover-Amazing-Events-MeetHub-07-10-2025_12_25_AM_xtot9e.png)
+Development will proceed iteratively.
+Not every long-term capability is implemented in the inherited codebase.
 
-### Event Creation
-![create event](https://res.cloudinary.com/iyanuashiri/image/upload/v1752105309/Create-Amazing-Event-MeetHub-07-10-2025_12_25_AM_gz7fik.png)
+## Technology
 
-### Notifications
-![notifications](https://res.cloudinary.com/iyanuashiri/image/upload/v1752105309/MeetHub-Connect-Meet-Experience-07-10-2025_12_26_AM_vjrflb.png)
+The inherited application is built primarily with:
 
-### User Profile
-![profile](https://res.cloudinary.com/iyanuashiri/image/upload/v1752105310/MeetHub-Connect-Meet-Experience-07-10-2025_12_27_AM_hohgpo.png)
+- Python
+- Django
+- HTML, CSS, Bootstrap, and JavaScript
+- SQLite for local development
 
-### Login Page
-![login](https://res.cloudinary.com/iyanuashiri/image/upload/v1752105726/Sign-In-MeetHub-07-10-2025_01_01_AM_f5jvkb.png)
+The inherited repository also includes configuration for additional deployment and cloud services.
+Event Volunteer Hub deployment decisions will be documented separately as the project evolves.
 
-### Signup Page
-![signup](https://res.cloudinary.com/iyanuashiri/image/upload/v1752105727/Join-MeetHub-Create-Your-Account-07-10-2025_01_01_AM_uwg9od.png)
-
-</details>
-
-## 🚀 Why Contribute to MeetHub?
-
-*   **Learn Django:** Get hands-on experience with a real-world Django application.
-*   **Make an Impact:** Your contributions will directly improve a tool for community building.
-*   **Join a Welcoming Community:** We are excited to help new contributors get started.
-
-## 🛠️ Technology Stack
-
-*   **Backend:** Python, Django
-*   **Database:** PostgreSQL (production), SQLite3 (development)
-*   **Frontend:** HTML, CSS, Bootstrap 5, JavaScript
-*   **Deployment:** Docker, Gunicorn, Whitenoise
-*   **Package Management:** `uv`
-*   **Cloud Services:** Cloudinary (for media), NeonDB (for database), Render (for hosting)
-
-## 🏁 Getting Started
-
-You can run MeetHub using `uv` (recommended for development) or Docker or virtual environment. 
-
-## Installation
+## Local Development
 
 ### Prerequisites
+
 - Python 3.10+
-- pip
-- uv (recommended)
+- `pip`
+- Git
+- `uv` if using the optional `uv` workflow
 
+Clone the repository:
 
-## Setup
+```bash
+git clone https://github.com/Community-TOS-Projects/event-volunteer-hub.git
+cd event-volunteer-hub
+```
 
-uv
-1. Clone the repository `git clone https://github.com/iyanuashiri/meethub.git`
-2. Sync the dependencies `uv sync`
-3. Run migrations `uv run python manage.py migrate`
-4. Run the server `uv run python manage.py runserver`
-5. Create a superuser (for admin access): `uv run python manage.py createsuperuser`
+Copy the example environment file:
 
-
-virtual environment 
-1. Clone the repository `git clone https://github.com/iyanuashiri/meethub.git`
-2. Create a virtual environment `python -m venv venv`
-3. Activate the virtual environment `venv\Scripts\activate` on windows or `source venv/bin/activate` on linux
-4. Install the requirements `pip install -r requirements.txt`
-5. Run the migrations `python manage.py migrate`
-6. Run the server `python manage.py runserver`
-
-
-docker
-1. Clone the repository `git clone https://github.com/iyanuashiri/meethub.git`
-2. Build the image `docker build -t meethub .`
-3. Run the container `docker run -p 8000:8000 --env-file .env meethub`
-4. Create a superuser (for admin access): `docker exec -it meethub python manage.py createsuperuser`
-5. The app will be available at http://localhost:8000. The entrypoint script will automatically run migrations.
-
-Visit http://127.0.0.1:8000 in your browser!
-
-## Cloud services 
-
-1. Cloudinary
-2. Render or any other hosting service
-3. NeonDB or any other database service
-4. 
-
-## Environment variables
-
-Before you start, copy the example environment file and fill in your details.
 ```bash
 cp .env_example .env
 ```
 
-1. SECRET_KEY
-2. DATABASE_NAME=
-3. DATABASE_USER=
-4. DATABASE_PASSWORD=
-5. DATABASE_HOST=
-6. DATABASE_PORT=
-7. DEBUG=True
-8. CLOUDINARY_NAME=
-9. CLOUDINARY_API_KEY=
-10. CLOUDINARY_API_SECRET=
+Set a development `SECRET_KEY` in `.env`.
+The inherited configuration can use SQLite for local development when external database settings are not supplied.
 
-You will need to set the SECRET_KEY. For local development, you can leave the database and Cloudinary variables blank to use SQLite and local media storage.
+### Option 1: Python Virtual Environment
 
-Visit `http://localhost:8000` in your browser.
+Create and activate a virtual environment:
 
+```bash
+python -m venv venv
+```
 
+Windows:
 
+```bash
+venv\Scripts\activate
+```
 
+Linux/macOS:
 
-Add threaded comments for better discussions
-Add location-based event exploration (e.g., with a map)
-Implement social authentication (Google, GitHub)
-Add event categories and tags for better filtering (good first issue)
-Enable event sharing on social media
+```bash
+source venv/bin/activate
+```
 
+Install dependencies:
 
-## Roadmap
-We have a lot of exciting features planned! Here are some ideas, many of which are great for first-time contributors.
-- [ ] Add a comprehensive test suite (help wanted, sprint)
-- [ ] Implement REST API for a mobile-friendly experience
-- [ ] Add threaded comments for better discussions
-- [ ] Add location-based event exploration (e.g., with a map)
-- [ ] Implement social authentication (Google, GitHub)
-- [ ] Add event categories and tags for better filtering (good first issue)
-- [ ] Enable event sharing on social media
+```bash
+pip install -r requirements.txt
+```
+
+Run migrations:
+
+```bash
+python manage.py migrate
+```
+
+Start the development server:
+
+```bash
+python manage.py runserver
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/
+```
+
+### Option 2: uv
+
+Install dependencies and create the environment:
+
+```bash
+uv sync
+```
+
+Run migrations:
+
+```bash
+uv run python manage.py migrate
+```
+
+Start the development server:
+
+```bash
+uv run python manage.py runserver
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/
+```
+
+## Engineering Decisions
+
+Significant engineering decisions are documented in the companion [Event Volunteer Hub Engineering Decision Log](https://github.com/Community-TOS-Projects/event-volunteer-edl).
+
+The Engineering Decision Log records the context, rationale, alternatives, consequences, and follow-up work associated with important project decisions.
+Contributors should review relevant EDL entries before changing an established project decision.
 
 ## Contributing
-Contributions are welcome! Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
-Please feel free to submit a Pull Request. See our Contributing Guide for details on our code of conduct and the process for submitting pull requests to us.
+
+Event Volunteer Hub is developed through issues, branches, pull requests, review, and documented engineering decisions.
+Contribution guidance will be maintained in `CONTRIBUTING.md`.
+
+Before making a substantial change, review the open issues and relevant Engineering Decision Log entries so that new work builds on the existing project history.
+
+## MeetHub Attribution
+
+Event Volunteer Hub incorporates source code originally developed as [MeetHub](https://github.com/iyanuashiri/meethub).
+
+MeetHub copyright:
+
+> Copyright (c) 2018 Iyanu Ajao
+
+The original MeetHub source was released under the MIT License.
+The original MIT copyright and license notice are preserved in [`LICENSE-MIT`](LICENSE-MIT).
+
+This repository was initialized by importing MeetHub source code without importing the original Git history.
+The original MeetHub repository remains the authoritative source for its earlier development history.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Event Volunteer Hub is distributed under the [GNU General Public License version 3](LICENSE).
+
+Portions of the repository inherited from MeetHub remain subject to the original MIT copyright and license notice preserved in [`LICENSE-MIT`](LICENSE-MIT).
