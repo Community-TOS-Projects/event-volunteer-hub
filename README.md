@@ -130,10 +130,11 @@ Start the development server:
 uv run python manage.py runserver
 ```
 
-Open:
+Open either:
 
 ```text
 http://127.0.0.1:8000/
+http://localhost:8000/
 ```
 
 ### Administrative Access
@@ -164,10 +165,11 @@ False
 The `is_client` field is separate from Django's `is_staff` and `is_superuser` permissions.
 The `createsuperuser` command creates the account with the staff and superuser permissions required for administrative access.
 
-After starting the development server, open the Django administration interface at:
+After starting the development server, open the Django administration interface at either:
 
 ```text
 http://127.0.0.1:8000/admin/
+http://localhost:8000/admin/
 ```
 
 Sign in using the superuser credentials you created.

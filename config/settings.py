@@ -24,7 +24,10 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'meethub-8mla.onrender.com']
+ALLOWED_HOSTS = [
+    '127.0.0.1', 
+    'localhost'
+]
 
 INSTALLED_APPS = [
     'grappelli',
