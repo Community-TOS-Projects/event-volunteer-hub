@@ -219,6 +219,24 @@
             animation-delay: 15s;
         }
 
+        .btn-hero-login {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 28px;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin: 0 10px;
+    }
+
+        .btn-hero-login:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+
         @media (max-width: 768px) {
             .glass-card {
                 margin: 1rem;
@@ -255,7 +273,7 @@
                     </div>
                     {% if not user.is_authenticated %}
                     <div class="col-auto">
-                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">
+                        <a href="{% url 'accounts:login' %}" class="btn btn-hero-login">
                             Log In / Sign Up
                         </a>
                     </div>
