@@ -253,6 +253,13 @@
                             MeetHub
                         </a>
                     </div>
+                    {% if not user.is_authenticated %}
+                    <div class="col-auto">
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">
+                            Log In / Sign Up
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </header>
