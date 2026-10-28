@@ -5,14 +5,13 @@
 
 ## Current System Behavior
 - Event creation form includes start time only.
-- No field exists for event end time.
+- No field exists for event end time. 
 - No model or workflow exists for shifts.
 - Volunteers cannot be assigned to specific time blocks.
 - Long events cannot be represented accurately.
 
 ## Expected Event Time Structure
 An event should have a start time and an end time on its event date. The end time describes when the event is expected to finish. It is distinct from the start time and should be visible wherever organizers create or review an event.
-
 
 The event's start and end establish the time window within which its shifts are expected to take place. Whether events may span midnight, and how that should be represented, remains an open question.
 
@@ -21,13 +20,14 @@ A shift is a named volunteer work period associated with one event. Long events 
 
 ### Required Shift Attributes
 
-
 - **Name** — a short label that identifies the work period, such as “Setup” or “Afternoon check-in.”
 - **Start time** — when volunteers assigned to the shift are expected to begin.
 - **End time** — when the shift is expected to finish.
 - **Capacity** — the maximum number of volunteers the shift can accommodate.
 - **Event** — the event this shift belongs to.
-
+- **Description** — a text field describing the shift.
+- **Volunteers (Many to Many)** — a list of users assigned to the shift.
+- **Reverse relation: event.shifts** — implemented via related_name='shifts'.
 
 The name, start time, end time, and capacity describe the shift, the event relationship associates it with its parent event. Whether additional attributes are needed, such as role or description, is undecided.
 
@@ -46,18 +46,34 @@ The event creation workflow should eventually allow:
 
 ## Potential Database Changes
 
-
 The following changes are likely needed; they are design considerations, not an implemented schema:
-
 
 - Add an event end-time field, likely named `end_time`, alongside the existing `time` field.
 - Decide whether to keep and relabel `time` as the event start time or migrate/rename it to `start_time`. Preserve existing event start times when applying any schema migration.
 - Create a `Shift` model with a foreign key to `Event`, plus fields for name, start time, end time, and capacity.
 - Use a one-to-many relationship: an event can have multiple shifts, and each shift belongs to one event. A reverse relation from an event to its shifts would allow the application to display and manage them together.
 - Add and apply database migrations for the event and shift schema changes.
+- Organization Model
+A new Organization model exists with fields:
+•	name
+•	description
+•	website
+•	contact_email
+•	created_at
+•	updated_at
+This model is not part of the event/shift design but is now part of the system.
+- Attendance Model
+A new Attendance model tracks volunteer participation:
+•	user — the volunteer
+•	event — the event attended
+•	shift — optional link to a specific shift
+•	status — pending, approved, attended, cancelled
+•	hours_recorded — decimal number of hours
+•	created_at, updated_at
+Additional implemented rule:
+•	unique_together(user, shift) — a volunteer cannot have multiple attendance records for the same shift.
 
 ## Open Questions
-
 
 1. **Event dates and overnight events:** Can an event or shift cross midnight? If so, should shifts store full start/end datetimes or a date in addition to their times?
 2. **Time boundaries:** Must an event end time be later than its start time, and must every shift fall entirely within the event's start/end window?
@@ -74,5 +90,5 @@ This documentation enables future issues such as:
 - Adding end_time to the Event model.
 - Creating the Shift model and migrations.
 - Implementing shift creation in the UI.
-- Adding volunteer shift sign‑up workflows.
+- Adding volunteer shift sign up workflows.
 - Writing tests for shift validation and scheduling.
