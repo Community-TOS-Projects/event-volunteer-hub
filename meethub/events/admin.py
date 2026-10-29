@@ -16,8 +16,8 @@ admin.site.register(Category, CategoryAdmin)
 
 class EventAdmin(admin.ModelAdmin):
 
-    list_display = ('name', 'venue', 'date', 'time')
-    fields = ('category', 'name', 'creator', 'details', 'venue', ('date', 'time'))
+    list_display = ('name', 'venue', 'date', 'start_time', 'end_time')
+    fields = ('category', 'name', 'creator', 'details', 'venue', 'date', ('start_time', 'end_time'))
     search_fields = ('name', 'details')
 
 admin.site.register(Event, EventAdmin)
@@ -32,8 +32,8 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
-    list_display = ('event', 'start_time', 'end_time', 'description', 'max_volunteers')
-    search_fields = ('eventname', 'description')
+    list_display = ('name', 'event', 'start_time', 'end_time', 'description', 'capacity')
+    search_fields = ('name', 'event__name', 'description')
     list_filter = ('start_time', 'end_time')
 
 

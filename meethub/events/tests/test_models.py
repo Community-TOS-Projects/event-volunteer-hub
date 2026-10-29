@@ -1,6 +1,8 @@
-from datetime import datetime
+from datetime import date, datetime, time
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils import timezone
 
 from meethub.accounts.models import Account
 from meethub.events.models import Attendance, Event, Category, Organization, Shift
@@ -21,8 +23,9 @@ class EventModelTest(TestCase):
             name='Party Outside',
             details='This party is gonna be banging again',
             venue='Mapo Hall',
-            date='2018-05-18',
-            time='12:25:00',
+            date=date(2018, 5, 18),
+            start_time=time(9, 25),
+            end_time=time(14, 25),
             category=cls.category,
             creator=cls.account,
         )
@@ -43,9 +46,13 @@ class EventModelTest(TestCase):
         field_label = self.event._meta.get_field('date').verbose_name
         self.assertEqual(field_label, 'date')
 
-    def test_time_label(self):
-        field_label = self.event._meta.get_field('time').verbose_name
-        self.assertEqual(field_label, 'time')
+    def test_start_time_label(self):
+        field_label = self.event._meta.get_field('start_time').verbose_name
+        self.assertEqual(field_label, 'start time')
+
+    def test_end_time_label(self):
+        field_label = self.event._meta.get_field('end_time').verbose_name
+        self.assertEqual(field_label, 'end time')
 
     def test_name_max_length(self):
         max_length = self.event._meta.get_field('name').max_length
@@ -129,17 +136,19 @@ class AttendanceModelTest(TestCase):
             name='Tech Conference',
             details='A conference for tech enthusiasts',
             venue='Convention Center',
-            date='2023-06-01',
-            time='09:00:00',
+            date=date(2023, 6, 1),
+            start_time=time(9, 0),
+            end_time=time(17, 0),
             category=cls.category,
             creator=cls.user,
         )
         cls.shift = Shift.objects.create(
             event=cls.event,
-            start_time=datetime(2023, 6, 1, 9, 0, 0),
-            end_time=datetime(2023, 6, 1, 17, 0, 0),
-            description='Morning shift',
-            max_volunteers=5,
+            name='Morning Shift',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 9, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 17, 0, 0)),
+            description='Morning shift for attendees',
+            capacity=5,
         )
         cls.attendance = Attendance.objects.create(
             user=cls.user,
@@ -158,6 +167,35 @@ class AttendanceModelTest(TestCase):
     def test_attendance_verbose_name_plural(self):
         self.assertEqual(str(Attendance._meta.verbose_name_plural), 'attendances')
 
+    def test_shift_name_and_capacity(self):
+        self.assertEqual(str(self.shift), 'Morning Shift')
+        self.assertEqual(self.shift.capacity, 5)
+
+    def test_shift_within_event_time_range(self):
+        shift = Shift(
+            event=self.event,
+            name='Within Event',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 10, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 16, 0, 0)),
+            description='Valid event shift',
+            capacity=5,
+        )
+        shift.full_clean()
+
+    def test_shift_cannot_exceed_event_time_range(self):
+        shift = Shift(
+            event=self.event,
+            name='Outside Event',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 8, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 18, 0, 0)),
+            capacity=5,
+        )
+        with self.assertRaises(ValidationError) as error:
+            shift.save()
+
+        self.assertIn('start_time', error.exception.message_dict)
+        self.assertIn('end_time', error.exception.message_dict)
+
     def test_timestamps(self):
         self.assertIsNotNone(self.attendance.created_at)
         self.assertIsNotNone(self.attendance.updated_at)
@@ -166,10 +204,11 @@ class AttendanceModelTest(TestCase):
         for status_value, _ in Attendance.StatusChoices.choices:
             shift = Shift.objects.create(
                 event=self.event,
-                start_time=datetime(2023, 6, 1, 9, 0, 0),
-                end_time=datetime(2023, 6, 1, 17, 0, 0),
+                name=f'{status_value} Shift',
+                start_time=timezone.make_aware(datetime(2023, 6, 1, 9, 0, 0)),
+                end_time=timezone.make_aware(datetime(2023, 6, 1, 17, 0, 0)),
                 description=f'{status_value} shift',
-                max_volunteers=5,
+                capacity=5,
             )
             attendance = Attendance.objects.create(
                 user=self.user,
