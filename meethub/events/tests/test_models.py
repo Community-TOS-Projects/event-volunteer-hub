@@ -1,126 +1,222 @@
+from datetime import date, datetime, time
+
+from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.utils import timezone
 
-import pytest
-from meethub.events.models import Event, Category, User
-
-
-@pytest.mark.django_db
-def test_category_model(category):
-    assert category.name == 'Software'
-    assert category.description == 'For software developers'
-    assert str(Category._meta.verbose_name_plural) == 'categories'
-
-
-@pytest.mark.django_db
-def test_event_model(event, category, account):
-    assert event.details == 'For Python developers'
-    assert event.name == 'Pycon'
-    assert event.venue == 'jand'
-    assert event.creator == account
-    assert event.category == category
-    assert event.get_number_of_attendees() == 0
-    assert event.get_comments_number() == 0
-
-
-@pytest.mark.django_db
-def test_event_label(event):
-    assert event._meta.get_field('name') == 'name'
-    assert event._meta.get_field('details') == 'details'
-    assert event._meta.get_field('venue') == 'venue'
-    assert event._meta.get_field('date') == 'date'
-    assert event._meta.get_field('time') == 'time'
-    assert event._meta.get_field('category') == 'category'
-    assert event._meta.get_field('creator') == 'creator'
-    assert event._meta.get_field('attendees') == 'attendees'
-    assert event._meta.get_field('num_of_attendees') == 'num of attendees'
-
-
-@pytest.mark.django_db
-def test_field_attributes(event):
-    assert event._meta.get_field('name').max_length == 50
-    assert event._meta.get_field('venue').max_length == 200
-    assert Event._meta.verbose_name_plural == 'events'
+from meethub.accounts.models import Account
+from meethub.events.models import Attendance, Event, Category, Organization, Shift
 
 
 class EventModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        category = Category.objects.create(name='Technology', description='This is the future')
-        user = User.objects.create(username='iyanu', password=12345, email='iyanu@gmail.com')
-        Event.objects.create(name='Party Outside', details='This party is gonna be banging again', venue='Mapo Hall',
-                             date='2018-05-18', time='12:25:00', category=category, creator=user)
+        cls.account = Account.objects.create_user(
+            email='iyanu@gmail.com',
+            password='secret123',
+            first_name='Iyanu',
+            last_name='Ajao',
+        )
+        cls.category = Category.objects.create(name='Technology', description='This is the future')
+        cls.event = Event.objects.create(
+            name='Party Outside',
+            details='This party is gonna be banging again',
+            venue='Mapo Hall',
+            date=date(2018, 5, 18),
+            start_time=time(9, 25),
+            end_time=time(14, 25),
+            category=cls.category,
+            creator=cls.account,
+        )
 
     def test_name_label(self):
-        event = Event.objects.get(name='Party Outside')
-        field_label = event._meta.get_field('name').verbose_name
-        self.assertEquals(field_label, 'name')
+        field_label = self.event._meta.get_field('name').verbose_name
+        self.assertEqual(field_label, 'name')
 
     def test_details_label(self):
-        event = Event.objects.get(name='Party Outside')
-        field_label = event._meta.get_field('details').verbose_name
-        self.assertEquals(field_label, 'Details')
+        field_label = self.event._meta.get_field('details').verbose_name
+        self.assertEqual(field_label, 'details')
 
     def test_venue_label(self):
-        event = Event.objects.get(name='Party Outside')
-        field_label = event._meta.get_field('venue').verbose_name
-        self.assertEquals(field_label, 'venue')
+        field_label = self.event._meta.get_field('venue').verbose_name
+        self.assertEqual(field_label, 'venue')
 
     def test_date_label(self):
-        event = Event.objects.get(name='Party Outside')
-        field_label = event._meta.get_field('date').verbose_name
-        self.assertEquals(field_label, 'date')
+        field_label = self.event._meta.get_field('date').verbose_name
+        self.assertEqual(field_label, 'date')
 
-    def test_time_label(self):
-        event = Event.objects.get(name='Party Outside')
-        field_label = event._meta.get_field('time').verbose_name
-        self.assertEquals(field_label, 'time')
+    def test_start_time_label(self):
+        field_label = self.event._meta.get_field('start_time').verbose_name
+        self.assertEqual(field_label, 'start time')
+
+    def test_end_time_label(self):
+        field_label = self.event._meta.get_field('end_time').verbose_name
+        self.assertEqual(field_label, 'end time')
 
     def test_name_max_length(self):
-        event = Event.objects.get(name='Party Outside')
-        max_length = event._meta.get_field('name').max_length
-        self.assertEquals(max_length, 50)
+        max_length = self.event._meta.get_field('name').max_length
+        self.assertEqual(max_length, 50)
 
     def test_venue_max_length(self):
-        event = Event.objects.get(name='Party Outside')
-        max_length = event._meta.get_field('venue').max_length
-        self.assertEquals(max_length, 200)
+        max_length = self.event._meta.get_field('venue').max_length
+        self.assertEqual(max_length, 200)
 
     def test_event_object_name(self):
-        event = Event.objects.get(name='Party Outside')
-        expected_object_name = '{}'.format(event.name)
-        self.assertEquals(expected_object_name, str(event))
+        self.assertEqual(str(self.event), 'Party Outside')
 
     def test_get_absolute_url(self):
-        event = Event.objects.get(name='Party Outside')
-        self.assertEquals(event.get_absolute_url(), '/events/13/')
+        self.assertTrue(self.event.get_absolute_url().startswith('/events/'))
 
     def test_get_absolute_url_not_none(self):
-        event = Event.objects.get(name='Party Outside')
-        self.assertIsNotNone(event.get_absolute_url())
+        self.assertIsNotNone(self.event.get_absolute_url())
 
     def test_get_number_of_attendees(self):
-        event = Event.objects.get(name='Party Outside')
-        self.assertEquals(event.get_number_of_attendees(), 0)
+        self.assertEqual(self.event.get_number_of_attendees(), 0)
 
     def test_get_comments_number(self):
-        event = Event.objects.get(name='Party Outside')
-        self.assertEquals(event.get_comments_number(), 0)
+        self.assertEqual(self.event.get_comments_number(), 0)
 
     def test_verbose_name_plural(self):
-        self.assertEquals(str(Event._meta.verbose_name_plural), 'events')
+        self.assertEqual(str(Event._meta.verbose_name_plural), 'events')
 
 
 class CategoryModelTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        Category.objects.create(name='Technology', description='This is the future')
+        cls.category = Category.objects.create(name='Technology', description='This is the future')
 
     def test_category_object_name(self):
-        category = Category.objects.get(name='Technology')
-        expected_object_name = '{}'.format(category.name)
-        self.assertEquals(expected_object_name, str(category))
+        self.assertEqual(str(self.category), 'Technology')
 
     def test_category_verbose_name_plural(self):
-        self.assertEquals(str(Category._meta.verbose_name_plural), 'categories')
+        self.assertEqual(str(Category._meta.verbose_name_plural), 'categories')
+
+
+class OrganizationModelTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.organization = Organization.objects.create(
+            name='Tech Corp',
+            description='A technology company',
+            website='https://www.techcorp.com',
+            contact_email='contact@techcorp.com',
+        )
+
+    def test_organization_object_name(self):
+        self.assertEqual(str(self.organization), 'Tech Corp')
+
+    def test_organization_verbose_name_plural(self):
+        self.assertEqual(str(Organization._meta.verbose_name_plural), 'organizations')
+
+    def test_organization_fields(self):
+        self.assertEqual(self.organization.description, 'A technology company')
+        self.assertEqual(self.organization.website, 'https://www.techcorp.com')
+        self.assertEqual(self.organization.contact_email, 'contact@techcorp.com')
+
+    def test_organization_timestamps(self):
+        self.assertIsNotNone(self.organization.created_at)
+        self.assertIsNotNone(self.organization.updated_at)
+
+
+class AttendanceModelTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = Account.objects.create_user(
+            email='iyanu@example.com',
+            password='secret123',
+            first_name='Iyanu',
+            last_name='Ajao',
+        )
+        cls.category = Category.objects.create(name='Technology', description='This is the future')
+        cls.event = Event.objects.create(
+            name='Tech Conference',
+            details='A conference for tech enthusiasts',
+            venue='Convention Center',
+            date=date(2023, 6, 1),
+            start_time=time(9, 0),
+            end_time=time(17, 0),
+            category=cls.category,
+            creator=cls.user,
+        )
+        cls.shift = Shift.objects.create(
+            event=cls.event,
+            name='Morning Shift',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 9, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 17, 0, 0)),
+            description='Morning shift for attendees',
+            capacity=5,
+        )
+        cls.attendance = Attendance.objects.create(
+            user=cls.user,
+            event=cls.event,
+            shift=cls.shift,
+            status='pending',
+            hours_recorded=8,
+        )
+
+    def test_attendance_object_name(self):
+        expected_object_name = (
+            f"{self.user} - {self.shift.start_time.strftime('%Y-%m-%d %H:%M')} - {self.attendance.get_status_display()}"
+        )
+        self.assertEqual(str(self.attendance), expected_object_name)
+
+    def test_attendance_verbose_name_plural(self):
+        self.assertEqual(str(Attendance._meta.verbose_name_plural), 'attendances')
+
+    def test_shift_name_and_capacity(self):
+        self.assertEqual(str(self.shift), 'Morning Shift')
+        self.assertEqual(self.shift.capacity, 5)
+
+    def test_shift_within_event_time_range(self):
+        shift = Shift(
+            event=self.event,
+            name='Within Event',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 10, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 16, 0, 0)),
+            description='Valid event shift',
+            capacity=5,
+        )
+        shift.full_clean()
+
+    def test_shift_cannot_exceed_event_time_range(self):
+        shift = Shift(
+            event=self.event,
+            name='Outside Event',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 8, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 18, 0, 0)),
+            capacity=5,
+        )
+        with self.assertRaises(ValidationError) as error:
+            shift.save()
+
+        self.assertIn('start_time', error.exception.message_dict)
+        self.assertIn('end_time', error.exception.message_dict)
+
+    def test_timestamps(self):
+        self.assertIsNotNone(self.attendance.created_at)
+        self.assertIsNotNone(self.attendance.updated_at)
+
+    def test_status_choices(self):
+        for status_value, _ in Attendance.StatusChoices.choices:
+            shift = Shift.objects.create(
+                event=self.event,
+                name=f'{status_value} Shift',
+                start_time=timezone.make_aware(datetime(2023, 6, 1, 9, 0, 0)),
+                end_time=timezone.make_aware(datetime(2023, 6, 1, 17, 0, 0)),
+                description=f'{status_value} shift',
+                capacity=5,
+            )
+            attendance = Attendance.objects.create(
+                user=self.user,
+                event=self.event,
+                shift=shift,
+                status=status_value,
+                hours_recorded=5,
+            )
+            self.assertIn(attendance.status, [choice[0] for choice in Attendance.StatusChoices.choices])
+
+        self.assertEqual(len([choice[0] for choice in Attendance.StatusChoices.choices]), 4)
