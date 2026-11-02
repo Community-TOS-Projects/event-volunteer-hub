@@ -81,12 +81,6 @@ class EventFormMixin(object):
         create_action(self.request.user, 'created a new event', form.instance)
         return response
 
-class EventCreateFormMixin(object):
-    def form_valid(self, form):
-        form.instance.creator = self.request.user
-        response = super().form_valid(form)
-        create_action(self.request.user, 'created a new event', form.instance)
-        return response
 
 class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.CreateView):
     model = Event
@@ -97,7 +91,7 @@ class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     success_message = "%(name)s was created successfully"
 
     
-class EventUpdate(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, EventFormMixin, generic.UpdateView):
+class EventUpdate(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, generic.UpdateView):
     model = Event
     template_name = 'events/update_form.html'
     template_name_suffix = '_update_form'
