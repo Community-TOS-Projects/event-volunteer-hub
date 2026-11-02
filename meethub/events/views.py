@@ -13,6 +13,7 @@ from meethub.comments.forms import CommentForm
 
 from meethub.events.models import Event
 from meethub.events.forms import EventForm
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 # Create your views here.
@@ -80,6 +81,12 @@ class EventFormMixin(object):
         create_action(self.request.user, 'created a new event', form.instance)
         return response
 
+class EventCreateFormMixin(object):
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        response = super().form_valid(form)
+        create_action(self.request.user, 'created a new event', form.instance)
+        return response
 
 class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.CreateView):
     model = Event
@@ -90,21 +97,27 @@ class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     success_message = "%(name)s was created successfully"
 
     
-class EventUpdate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.UpdateView):
+class EventUpdate(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, EventFormMixin, generic.UpdateView):
     model = Event
     template_name = 'events/update_form.html'
     template_name_suffix = '_update_form'
     fields = ('category', 'name', 'details', 'venue', 'time', 'date',)
     success_message = "%(name)s was updated successfully"
 
+    def test_func(self):
+        event = self.get_object()
+        return event.creator == self.request.user
 
-class EventDelete(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):
+class EventDelete(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, generic.DeleteView):
     model = Event
     template_name = 'events/delete.html'
     success_url = reverse_lazy('events:event-list')
     context_object_name = 'event'
     success_message = "%(name)s was deleted successfully"
 
+    def test_func(self):
+        event = self.get_object()
+        return event.creator == self.request.user
 
 @login_required()
 def attend_event(request, event_id):
