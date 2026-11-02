@@ -51,15 +51,15 @@ class CommentCreate(SuccessMessageMixin, generic.CreateView):
     success_message = 'Comment was added successfully'
 
     def form_valid(self, form):
-        form.instance = form.save(commit=False)
-        form.instance.event = self.get_object(queryset=Event.objects.all())
+        event = get_object_or_404(Event, pk=self.kwargs['pk'])
+        form.instance.event = event
         form.instance.created_by = self.request.user
-        # create_action(self.request.user, 'added a comment', form.instance)
-        form.save()
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        create_action(self.request.user, 'added a comment', self.object)
+        return response
 
     def get_success_url(self):
-        return reverse_lazy('events:event-detail', kwargs={'pk': self.get_object(Event.objects.all()).pk})
+        return reverse_lazy('events:event-detail', kwargs={'pk': self.object.event_id})
 
 
 class EventDetail(LoginRequiredMixin, View):
@@ -85,7 +85,6 @@ class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     model = Event
     template_name = 'events/create_form.html'
     form_class = EventForm
-    # fields = ('category', 'name', 'details', 'venue', 'time', 'date')
     context_object_name = 'event'
     success_message = "%(name)s was created successfully"
 
@@ -94,16 +93,21 @@ class EventUpdate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     model = Event
     template_name = 'events/update_form.html'
     template_name_suffix = '_update_form'
-    fields = ('category', 'name', 'details', 'venue', 'time', 'date',)
+    fields = ('category', 'name', 'details', 'venue', 'start_time', 'end_time', 'date',)
     success_message = "%(name)s was updated successfully"
 
 
-class EventDelete(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):
+class EventDelete(LoginRequiredMixin, generic.DeleteView):
     model = Event
     template_name = 'events/delete.html'
     success_url = reverse_lazy('events:event-list')
     context_object_name = 'event'
-    success_message = "%(name)s was deleted successfully"
+
+    def form_valid(self, form):
+        event_name = self.object.name
+        response = super().form_valid(form)
+        messages.success(self.request, f'{event_name} was deleted successfully')
+        return response
 
 
 @login_required()

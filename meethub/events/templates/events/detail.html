@@ -39,7 +39,7 @@
                                 <div class="col-md-6 mb-2">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-clock text-primary mr-2"></i>
-                                        <span class="h5 text-dark mb-0">{{ event.time }}</span>
+                                        <span class="h5 text-dark mb-0">{{ event.start_time }} - {{ event.end_time }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +120,7 @@
                                         <i class="fas fa-user-circle text-primary" style="font-size: 2rem;"></i>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0 font-weight-bold">{{ attendee.username|capfirst }}</h6>
+                                        <h6 class="mb-0 font-weight-bold">{{ attendee.get_fullname }}</h6>
                                         <small class="text-muted">Attendee</small>
                                     </div>
                                 </div>

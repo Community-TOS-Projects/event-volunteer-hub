@@ -33,7 +33,7 @@
                                 </h5>
                                 <div class="text-muted">
                                     <small>
-                                        <i class="fas fa-clock mr-1"></i>{{ event.date }} at {{ event.time }}
+                                        <i class="fas fa-clock mr-1"></i>{{ event.date }} at {{ event.start_time }} - {{ event.end_time }}
                                     </small>
                                     {% if event.venue %}
                                     <br>
@@ -148,3 +148,5 @@
         border: 1px solid rgba(226, 232, 240, 0.8);
         border-radius: 12px;
     }
+</style>
+{% endblock %}

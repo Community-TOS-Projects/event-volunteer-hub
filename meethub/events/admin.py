@@ -40,5 +40,5 @@ class ShiftAdmin(admin.ModelAdmin):
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
     list_display = ('user', 'event', 'shift', 'status', 'hours_recorded')
-    search_fields = ('userusername', 'event__name')
+    search_fields = ('user__email', 'event__name')
     list_filter = ('status', 'hours_recorded')

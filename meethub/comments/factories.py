@@ -7,7 +7,7 @@ from meethub.accounts.factories import AccountFactory
 from meethub.events.factories import EventFactory
 
 
-class CommentFactory(factory.DjangoModelFactory):
+class CommentFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Comment

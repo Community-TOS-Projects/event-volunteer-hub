@@ -25,7 +25,8 @@ class AttendanceTestBase(TestCase):
             name='Technology', description='This is the future')
         self.event = Event.objects.create(
             name='Party Outside', details='This party is gonna be banging again',
-            venue='Mapo Hall', date='2018-05-18', time='12:25:00',
+            venue='Mapo Hall', date='2018-05-18',
+            start_time='12:25:00', end_time='13:25:00',
             category=self.category, creator=self.account)
 
         # Build the URLs used in the tests

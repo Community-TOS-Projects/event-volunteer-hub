@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from meethub.accounts.models import Account
+from meethub.events.factories import EventFactory
 from meethub.events.models import Attendance, Event, Category, Organization, Shift
 
 
@@ -74,6 +75,11 @@ class EventModelTest(TestCase):
     def test_get_number_of_attendees(self):
         self.assertEqual(self.event.get_number_of_attendees(), 0)
 
+    def test_event_factory_uses_current_time_fields(self):
+        event = EventFactory.build()
+        self.assertEqual(event.start_time, time(9, 0))
+        self.assertEqual(event.end_time, time(10, 0))
+
     def test_get_comments_number(self):
         self.assertEqual(self.event.get_comments_number(), 0)
 
@@ -119,7 +125,6 @@ class OrganizationModelTest(TestCase):
     def test_organization_timestamps(self):
         self.assertIsNotNone(self.organization.created_at)
         self.assertIsNotNone(self.organization.updated_at)
-
 
 class AttendanceModelTest(TestCase):
 
@@ -199,6 +204,41 @@ class AttendanceModelTest(TestCase):
     def test_timestamps(self):
         self.assertIsNotNone(self.attendance.created_at)
         self.assertIsNotNone(self.attendance.updated_at)
+
+    def test_deleting_event_deletes_its_shifts(self):
+        shift_id = self.shift.pk
+
+        self.event.delete()
+
+        self.assertFalse(Shift.objects.filter(pk=shift_id).exists())
+
+    def test_deleting_event_deletes_its_attendance_records(self):
+        attendance_id = self.attendance.pk
+
+        self.event.delete()
+
+        self.assertFalse(Attendance.objects.filter(pk=attendance_id).exists())
+
+    def test_deleting_volunteer_deletes_their_attendance_records(self):
+        volunteer = Account.objects.create_user(
+            email='volunteer@example.com',
+            password='secret123',
+            first_name='Volunteer',
+            last_name='Test',
+        )
+        attendance = Attendance.objects.create(
+            user=volunteer,
+            event=self.event,
+            shift=self.shift,
+            status=Attendance.StatusChoices.PENDING,
+            hours_recorded=0,
+        )
+        attendance_id = attendance.pk
+
+        volunteer.delete()
+
+        self.assertFalse(Attendance.objects.filter(pk=attendance_id).exists())
+        self.assertTrue(Event.objects.filter(pk=self.event.pk).exists())
 
     def test_status_choices(self):
         for status_value, _ in Attendance.StatusChoices.choices:
