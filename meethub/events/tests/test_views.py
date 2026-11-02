@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 from meethub.comments.models import Comment
 from meethub.comments.forms import CommentForm
@@ -23,7 +25,7 @@ class EventListViewTest(TestCase):
                                  date='2018-05-18', time='12:25:00', category=category, creator=user)
 
     def test_view_url_exists_at_desired_location(self):
-        self.client.login(username='iyanu', password=12345)
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         resp = self.client.get('')
 
         # Check the user is logged in
@@ -33,18 +35,18 @@ class EventListViewTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         resp = self.client.get(reverse('events:event-list'))
         self.assertEqual(resp.status_code, 200)
 
     def test_view_uses_correct_template(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         resp = self.client.get(reverse('events:event-list'))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'events/list_of_events.html')
 
     def test_pagination_is_ten(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         resp = self.client.get(reverse('events:event-list'))
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('is_paginated' in resp.context)
@@ -52,7 +54,7 @@ class EventListViewTest(TestCase):
         self.assertTrue(len(resp.context['events']) == 10)
 
     def test_list_all_events_on_second_page(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         resp = self.client.get(reverse('events:event-list') + '?page=2')
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('is_paginated' in resp.context)
@@ -63,7 +65,7 @@ class EventListViewTest(TestCase):
 class EventDetailViewTest(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='iyanu', password=12345, email='iyanu@gmail.com')
+        self.user = User.objects.create_user(email = 'iyanu@gmail.com', password = '12345')
         self.attendee = User.objects.create_user(username='tobi', password=56789)
         self.attendee.save()
         self.user.save()
@@ -73,7 +75,7 @@ class EventDetailViewTest(TestCase):
                                           date='2018-05-18', time='12:25:00', category=self.category, creator=self.user)
 
     def test_detail_of_event(self):
-        self.client.login(username='iyanu', password=12345)
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(self.event.get_absolute_url())
 
         # Check the user is logged in
@@ -83,63 +85,63 @@ class EventDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-detail', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-detail', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'events/detail.html')
 
     def test_name_of_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(self.event.get_absolute_url())
         self.assertContains(response, self.event.name, html=True)
 
     def test_details_of_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(self.event.get_absolute_url())
         self.assertContains(response, self.event.details, html=True)
 
     def test_category_of_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(self.event.get_absolute_url())
         self.assertEqual(self.category, self.event.category)
 
     def test_creator_of_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(self.event.get_absolute_url())
         self.assertContains(response, self.event.creator.username)
 
     def test_list_attendees_for_a_detail_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-detail', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context['attending'])
 
     def test_list_of_comments_for_a_detail_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-detail', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertEquals(len(response.context['comments']), self.event.comments.all().count())
 
     def test_comment_form_on_event_detail_page(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-detail', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context['form'])
 
     def test_create_comment_form_displays_comment_on_event_detail_page(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         comment = Comment.objects.create(comment='Wow, how far', created_by=self.user, event=self.event)
         response = self.client.get(self.event.get_absolute_url())
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Wow')
 
     def test_valid_create_comment_form_on_event_detail_page_can_post_comment(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.post(self.event.get_absolute_url(),
                                     data={'comment': 'Wow, how far tobi', 'event': 'self.event.pk',
                                           'created_by': 'self.user'})
@@ -161,7 +163,7 @@ class EventCreateViewTest(TestCase):
                                           date='2018-05-18', time='12:25:00', category=self.category, creator=self.user)
 
     def test_create_event_url_exists_at_desired_location(self):
-        self.client.login(username='iyanu', password=12345)
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get('/events/new/')
 
         # Check the user is logged in
@@ -171,24 +173,24 @@ class EventCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-create'))
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-create'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'events/create_form.html')
 
     def test_event_form_is_on_create_event_page(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-create'))
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context['form'])
 
     def test_create_event_form_displays_event_on_event_detail_page(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         event = Event.objects.create(name='Party Outside', details='This party is gonna be banging again',
                                      venue='Mapo Hall',
                                      date='2018-05-18', time='12:25:00', category=self.category, creator=self.user)
@@ -197,7 +199,7 @@ class EventCreateViewTest(TestCase):
         self.assertContains(response, 'party is gonna')
 
     def test_valid_create_event_form_on_can_post_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.post(reverse('events:event-create'),
                                     data={'name': 'Party Outside', 'details': 'This party is gonna be banging again',
                                           'venue': 'Mapo Hall', 'date': '2018-05-18', 'time': '12:25:00',
@@ -210,9 +212,7 @@ class EventCreateViewTest(TestCase):
 class EventUpdateViewTest(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='iyanu', password=12345, email='iyanu@gmail.com')
-        self.attendee = User.objects.create_user(username='tobi', password=56789)
-        self.attendee.save()
+        self.user = User.objects.create_user(email='iyanu@gmail.com', password='12345')
         self.user.save()
         self.category = Category.objects.create(name='Technology', description='This is the future')
         self.event = Event.objects.create(name='Party Outside', details='This party is gonna be banging again',
@@ -223,7 +223,7 @@ class EventUpdateViewTest(TestCase):
         event = Event.objects.create(name='Google io', details='Android is coming for you',
                                           venue='Google Plex',
                                           date='2018-11-18', time='10:25:00', category=self.category, creator=self.user)
-        self.client.login(username='iyanu', password=12345)
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
 
         # Check the user is logged in
@@ -233,24 +233,24 @@ class EventUpdateViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'events/update_form.html')
 
     def test_event_form_is_on_update_event_page(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context['form'])
 
     def test_valid_update_event_form_on_can_update_event(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.post(reverse('events:event-update', kwargs={'pk': self.event.pk}),
                                     data={'name': 'Party Outside', 'details': 'This party is gonna be banging again',
                                           'venue': 'Mapo Hall', 'date': '2018-05-18', 'time': '12:25:00',
@@ -259,13 +259,17 @@ class EventUpdateViewTest(TestCase):
         self.assertEqual(new_response.status_code, 200)
         self.assertEqual(Event.objects.last().details, 'This party is gonna be banging again')
 
+    def test_non_creator_cannot_update_event(self):
+        other_user = User.objects.create_user(email='tobi@gmail.com', password='56789')
+        self.client.login(email='tobi@gmail.com', password='56789')
+        response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
+        self.assertEqual(response.status_code, 403)
+
 
 class EventDeleteViewTest(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='iyanu', password=12345, email='iyanu@gmail.com')
-        self.attendee = User.objects.create_user(username='tobi', password=56789)
-        self.attendee.save()
+        self.user = User.objects.create_user(email='iyanu@gmail.com', password='12345')
         self.user.save()
         self.category = Category.objects.create(name='Technology', description='This is the future')
         self.event = Event.objects.create(name='Party Outside', details='This party is gonna be banging again',
@@ -276,7 +280,7 @@ class EventDeleteViewTest(TestCase):
         event = Event.objects.create(name='Google io', details='Android is coming for you',
                                           venue='Google Plex',
                                           date='2018-11-18', time='10:25:00', category=self.category, creator=self.user)
-        self.client.login(username='iyanu', password=12345)
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
 
         # Check the user is logged in
@@ -286,21 +290,27 @@ class EventDeleteViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'events/delete.html')
 
     def test_delete_view_redirect_to_list_view(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.post(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
         # self.assertEqual(response.status_code, 200)
         self.assertRedirects(response, '/')
+
+    def test_non_creator_cannot_delete_event(self):
+        other_user = User.objects.create_user(email='tobi@gmail.com', password='56789')
+        self.client.login(email='tobi@gmail.com', password='56789')
+        response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
+        self.assertEqual(response.status_code, 403)
 
 
 class AttendEventTestView(TestCase):
@@ -319,17 +329,17 @@ class AttendEventTestView(TestCase):
         event = Event.objects.create(name='Google io', details='Android is coming for you',
                                           venue='Google Plex',
                                           date='2018-11-18', time='10:25:00', category=self.category, creator=self.user)
-        self.client.login(username='iyanu', password=12345)
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
         self.assertNotEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
         self.assertNotEqual(response.status_code, 200)
 
     def test_attend_event_view_redirect_to_event_detail(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
         self.assertRedirects(response, reverse('events:event-detail', kwargs={'pk': self.event.pk}))
 
