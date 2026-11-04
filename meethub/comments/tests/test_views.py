@@ -68,7 +68,7 @@ class CommentReplyViewTest(TestCase):
             name='Community Meetup',
             details='A community event',
             venue='Mapo Hall',
-            date='2026-05-18',
+            date='2026-05-17',
             time='12:25:00',
             category=self.category,
             creator=self.user,
