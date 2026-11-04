@@ -227,9 +227,7 @@ class EventUpdateViewTest(TestCase):
         response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
 
         # Check the user is logged in
-        # self.assertEqual(str(response.context['user']), 'iyanu')
-
-        # Check that we got a response 'success'
+        
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
@@ -265,6 +263,32 @@ class EventUpdateViewTest(TestCase):
         response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 403)
 
+    def test_unauthenticated_user_redirected_to_login_on_update(self):
+        """A logged-out user visiting the edit URL is redirected to login."""
+        response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/accounts/login/', response.url)  
+
+    def test_creator_remains_unchanged_after_update(self):
+        """After creator edits an event, creator field still points to original creator."""
+        self.client.login(email='iyanu@gmail.com', password='12345')
+        original_creator = self.event.creator
+
+        self.client.post(
+            reverse('events:event-update', kwargs={'pk': self.event.pk}),
+            data={
+                'name': 'Updated Event Name',
+                'details': 'Updated details description',
+                'venue': 'Mapo Hall',
+                'date': '2018-05-18',
+                'time': '12:25:00',
+                'category': self.category.pk,
+            }
+        )
+
+        self.event.refresh_form_db()
+        self.assertEqual(self.event.creator, original_creator)
+
 
 class EventDeleteViewTest(TestCase):
 
@@ -283,10 +307,7 @@ class EventDeleteViewTest(TestCase):
         self.client.login(email = 'iyanu@gmail.com', password = '12345')
         response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
 
-        # Check the user is logged in
-        # self.assertEqual(str(response.context['user']), 'iyanu')
-
-        # Check that we got a response 'success'
+        
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
@@ -311,6 +332,11 @@ class EventDeleteViewTest(TestCase):
         self.client.login(email='tobi@gmail.com', password='56789')
         response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
         self.assertEqual(response.status_code, 403)
+
+    def test_unauthenticated_user_redirected_to_login_on_delete(self):
+        response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/accounts/login/', response.url)
 
 
 class AttendEventTestView(TestCase):

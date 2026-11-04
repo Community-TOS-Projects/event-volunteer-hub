@@ -75,11 +75,8 @@ class EventDetail(LoginRequiredMixin, View):
 
 
 class EventFormMixin(object):
-    def form_valid(self, form):
-        form.instance.creator = self.request.user
-        response = super().form_valid(form)
-        create_action(self.request.user, 'created a new event', form.instance)
-        return response
+    pass
+    
 
 
 class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, generic.CreateView):
@@ -89,6 +86,12 @@ class EventCreate(LoginRequiredMixin, SuccessMessageMixin, EventFormMixin, gener
     # fields = ('category', 'name', 'details', 'venue', 'time', 'date')
     context_object_name = 'event'
     success_message = "%(name)s was created successfully"
+    def form_valid(self, form):
+            form.instance.creator = self.request.user
+            response = super().form_valid(form)
+            create_action(self.request.user, 'created a new event', form.instance)
+            return response
+    
 
     
 class EventUpdate(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, generic.UpdateView):
