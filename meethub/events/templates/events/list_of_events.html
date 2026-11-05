@@ -39,10 +39,10 @@
                     <i class="fas fa-fire mr-2"></i>Trending Events
                 </h2>
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-primary active">
+                    <button type="button" id="grid-btn" class="btn btn-outline-primary active">
                         <i class="fas fa-th-large mr-1"></i>Grid
                     </button>
-                    <button type="button" class="btn btn-outline-primary">
+                    <button type="button" id="list-btn" class="btn btn-outline-primary">
                         <i class="fas fa-list mr-1"></i>List
                     </button>
                 </div>
@@ -51,9 +51,9 @@
     </div>
 
     <!-- Events Grid -->
-    <div class="row">
+    <div class="row" id="events-container">
         {% for event in events %}
-        <div class="col-lg-4 col-md-6 mb-4">
+        <div class="col-lg-4 col-md-6 mb-4 event-col">
             <div class="card h-100">
                 <div class="card-header bg-gradient-primary text-white border-0">
                     <div class="row align-items-center">
@@ -72,7 +72,7 @@
                 
                 <div class="card-body d-flex flex-column">
                     {% if event.venue %}
-                    <div class="mb-3">
+                    <div class="mb-3 event-venue">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-map-marker-alt text-primary mr-2"></i>
                             <span class="font-weight-bold text-uppercase">{{ event.venue }}</span>
@@ -86,13 +86,13 @@
                         </a>
                     </h4>
                     
-                    <div class="card-text text-muted mb-3 flex-grow-1">
+                    <div class="card-text text-muted mb-3 flex-grow-1 event-description">
                         {{ event.details|safe|truncatewords_html:20 }}
                     </div>
                     
                     <div class="mt-auto">
                         <div class="row align-items-center">
-                            <div class="col-8">
+                            <div class="col-8 event-stats">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-users text-primary mr-2"></i>
                                     <span class="font-weight-bold text-primary">{{ event.get_number_of_attendees }}</span>
@@ -105,7 +105,7 @@
                                     <span class="text-muted ml-1">comment{{ event.get_comments_number|pluralize }}</span>
                                 </div>
                             </div>
-                            <div class="col-4 text-right">
+                            <div class="col-4 ml-auto text-right">
                                 <a href="{% url 'events:event-detail' event.id %}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-arrow-right mr-1"></i>View
                                 </a>
@@ -230,5 +230,108 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }
+
+    /* List view: each event spans the full row; description and attending/comments are hidden */
+    #events-container.list-view .event-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    #events-container.list-view .event-description,
+    #events-container.list-view .event-stats {
+        display: none;
+    }
+
+    /* Long venue/title: wrap, then cut off at 2 lines so the card never grows past it */
+    #events-container.list-view .event-venue span,
+    #events-container.list-view .card-title {
+        min-width: 0;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    /* Compact row: header | venue + title | View button | footer, side by side */
+    @media (min-width: 768px) {
+        #events-container.list-view .card {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        #events-container.list-view .card-header {
+            flex: 0 0 300px;
+            align-self: stretch;
+            display: flex;
+            align-items: center;
+            border-radius: 16px 0 0 16px;
+        }
+
+        #events-container.list-view .card-header .row {
+            flex: 1;
+        }
+
+        #events-container.list-view .card-body {
+            flex: 1;
+            min-width: 0;
+            flex-direction: row !important;
+            align-items: center;
+        }
+
+        #events-container.list-view .card-body > * {
+            margin-bottom: 0 !important;
+            padding-right: 1rem;
+        }
+
+        /* Fixed column widths: View button and footer stay in the same spot on every row */
+        #events-container.list-view .event-venue {
+            flex: 0 0 25%;
+            min-width: 0;
+        }
+
+        #events-container.list-view .card-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        #events-container.list-view .card-body > .mt-auto {
+            flex: 0 0 140px;
+        }
+
+        #events-container.list-view .card-body .col-4 {
+            flex: none;
+            max-width: none;
+        }
+
+        #events-container.list-view .card-footer {
+            flex: 0 0 240px;
+            min-width: 0;
+        }
+
+        /* Long author name: single line with "..." */
+        #events-container.list-view .card-footer small {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
 </style>
+
+<script>
+    // Grid/List toggle: switch a "list-view" class on the events row (CSS does the rest).
+    var eventsRow = document.getElementById('events-container');
+    var gridBtn = document.getElementById('grid-btn');
+    var listBtn = document.getElementById('list-btn');
+
+    function setView(isList) {
+        eventsRow.classList.toggle('list-view', isList);
+        listBtn.classList.toggle('active', isList);
+        gridBtn.classList.toggle('active', !isList);
+    }
+
+    gridBtn.addEventListener('click', function () { setView(false); });
+    listBtn.addEventListener('click', function () { setView(true); });
+</script>
 {% endblock %}
