@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, time
 
 import factory
 
@@ -6,7 +6,7 @@ from meethub.accounts.factories import AccountFactory
 from meethub.events.models import Event, Category
 
 
-class CategoryFactory(factory.DjangoModelFactory):
+class CategoryFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Category
@@ -15,16 +15,17 @@ class CategoryFactory(factory.DjangoModelFactory):
     description = 'For software developers'
 
 
-class EventFactory(factory.DjangoModelFactory):
+class EventFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Event
-
+ 
     name = 'Pycon'
     details = 'For Python developers'
     venue = 'jand'
-    date = factory.LazyFunction(datetime.today())
-    time = factory.LazyFunction(datetime.time(datetime.now()))
+    date = factory.LazyFunction(date.today)
+    start_time = time(9, 0)
+    end_time = time(10, 0)
     category = factory.SubFactory(CategoryFactory)
     creator = factory.SubFactory(AccountFactory)
     num_of_attendees = 1

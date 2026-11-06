@@ -5,7 +5,7 @@ import factory
 from meethub.accounts.models import Account
 
 
-class AccountFactory(factory.DjangoModelFactory):
+class AccountFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Account
