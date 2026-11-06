@@ -46,7 +46,7 @@ An event may have no shifts. When shifts are defined, they must not overlap one 
 ## Relationship Between Events and Shifts
 - An event may contain zero or more shifts.
 - Each shift is associated with exactly one event.
-- Event and shift start/end times fall on the event date; cross-midnight and multi-date events and shifts are not supported.
+- Event and shift start/end times fall on the event date. Current project expectations do not support cross-midnight and multi-date events and shifts. This can be revisited in the future if required so.
 - Each shift must be fully contained within the event's time window, and shifts for the same event must not overlap.
 - Event-level attendees and shift-level volunteer assignments serve different purposes and should remain distinct.
 - A person may RSVP, volunteer for one or more shifts, or do both. A volunteer assignment does not automatically create an RSVP. The event capacity counts each distinct person once, regardless of whether they RSVP and/or volunteer.
@@ -78,6 +78,7 @@ These are areas the eventual design must account for, not prescribed implementat
 1. **Assignment scope:** Can a volunteer hold more than one position or task during a shift, and how should those duties be communicated?
 2. **Editing and deletion:** What happens to existing volunteer assignments if a shift is edited or deleted?
 3. **Existing data migration:** How should existing events be handled when the event model is updated to include an end time or shift support?
+4. **Multi-date Event Shifts** How should multi-date events be dealt with if events are required to cross midnight in the future as current project works with event shifts on the event date? 
 
 ## Future Work
 This documentation supports future implementation work such as:
