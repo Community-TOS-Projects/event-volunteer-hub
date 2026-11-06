@@ -54,7 +54,7 @@ class Event(models.Model):
 
     def get_comments_number(self):
         return self.comments.all().count()
-
+ 
 #ORGANIZATION MODEL
 class Organization(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -84,6 +84,7 @@ class Shift(models.Model):
 
         event = self.event
         current_timezone = timezone.get_current_timezone()
+        # TODO: Revisit overnight shifts; this same-day Event window rejects work after midnight.
         event_start = datetime.combine(event.date, event.start_time)
         event_end = datetime.combine(event.date, event.end_time)
         shift_start = self.start_time

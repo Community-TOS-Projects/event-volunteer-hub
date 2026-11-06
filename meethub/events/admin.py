@@ -28,7 +28,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'website', 'contact_email', 'created_at', 'updated_at')
     search_fields = ('name', 'description', 'website', 'contact_email')
     list_filter = ('created_at', 'updated_at')
-
+ 
 
 @admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):

@@ -121,7 +121,7 @@ class OrganizationModelTest(TestCase):
         self.assertEqual(self.organization.description, 'A technology company')
         self.assertEqual(self.organization.website, 'https://www.techcorp.com')
         self.assertEqual(self.organization.contact_email, 'contact@techcorp.com')
-
+ 
     def test_organization_timestamps(self):
         self.assertIsNotNone(self.organization.created_at)
         self.assertIsNotNone(self.organization.updated_at)
@@ -199,6 +199,30 @@ class AttendanceModelTest(TestCase):
             shift.save()
 
         self.assertIn('start_time', error.exception.message_dict)
+        self.assertIn('end_time', error.exception.message_dict)
+
+    def test_shift_cannot_cross_midnight(self):
+        event = Event.objects.create(
+            name='Late Event',
+            details='A same-day event ending before midnight',
+            venue='Convention Center',
+            date=date(2023, 6, 1),
+            start_time=time(20, 0),
+            end_time=time(23, 59),
+            category=self.category,
+            creator=self.user,
+        )
+        shift = Shift(
+            event=event,
+            name='Overnight Shift',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 23, 30)),
+            end_time=timezone.make_aware(datetime(2023, 6, 2, 0, 30)),
+            capacity=2,
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            shift.save()
+
         self.assertIn('end_time', error.exception.message_dict)
 
     def test_timestamps(self):

@@ -14,7 +14,7 @@ from meethub.comments.forms import CommentForm
 
 
 # Create your views here.
-
+ 
 
 class CommentDelete(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):
     model = Comment

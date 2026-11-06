@@ -40,7 +40,7 @@ class AttendanceTestBase(TestCase):
     def is_attending(self, account):
         # Check if the account is in the event's attendee list
         return self.event.attendees.filter(pk=account.pk).exists()
-
+ 
 
 class AttendEventViewTest(AttendanceTestBase):
 

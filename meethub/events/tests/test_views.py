@@ -151,7 +151,7 @@ class EventDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.context['attending'])
         self.assertContains(response, self.attendee.get_fullname())
-
+ 
     def test_list_of_comments_for_a_detail_event(self):
         self.client.login(username='iyanu@gmail.com', password='12345')
         response = self.client.get(reverse('events:event-detail', kwargs={'pk': self.event.pk}))

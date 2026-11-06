@@ -50,7 +50,7 @@ class EventFormTest(TestCase):
     def test_event_form_start_time_field_label(self):
         form = EventForm()
         self.assertTrue(form.fields['start_time'].label is None or form.fields['start_time'].label == 'Start time')
-
+ 
     def test_event_form_start_time_field_help_text(self):
         form = EventForm()
         self.assertEqual(form.fields['start_time'].help_text, 'Please use the following format: <em>HH:MM:SS<em>')

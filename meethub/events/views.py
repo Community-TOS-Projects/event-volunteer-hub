@@ -108,7 +108,7 @@ class EventDelete(LoginRequiredMixin, generic.DeleteView):
         response = super().form_valid(form)
         messages.success(self.request, f'{event_name} was deleted successfully')
         return response
-
+ 
 
 @login_required()
 def attend_event(request, event_id):

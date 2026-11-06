@@ -19,7 +19,7 @@ class EventFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Event
-
+ 
     name = 'Pycon'
     details = 'For Python developers'
     venue = 'jand'

@@ -28,7 +28,7 @@ class EventForm(forms.ModelForm):
             'data-td-target': '#datetimepicker3'
         })
     )
-
+ 
     date = forms.DateField(
         help_text='Please use the following format: <em>YYYY-MM-DD</em>.',
         input_formats=['%m/%d/%Y', '%Y-%m-%d'],  # Ajusta según el formato de tu widget

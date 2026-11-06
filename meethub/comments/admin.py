@@ -10,5 +10,5 @@ class CommentAdmin(admin.ModelAdmin):
     fields = ('event', 'comment', 'created_by')
     search_fields = ('comment',)
 
-
+ 
 admin.site.register(Comment, CommentAdmin)

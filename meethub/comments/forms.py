@@ -12,3 +12,4 @@ class CommentForm(forms.ModelForm):
             'comment': forms.Textarea(attrs={'class': 'form-control'}),
             'parent': forms.HiddenInput()
         }
+ 
