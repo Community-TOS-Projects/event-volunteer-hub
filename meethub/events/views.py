@@ -128,4 +128,3 @@ def not_attend_event(request, event_id):
     create_action(attendee, 'no longer attending', event)
     messages.success(request, 'You are no longer attending {0}'.format(event.name))
     return redirect('events:event-detail', pk=event.pk)
-
