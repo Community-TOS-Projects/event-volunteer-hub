@@ -231,7 +231,6 @@
         border-bottom-left-radius: 0;
     }
 
-    /* List view: each event spans the full row; description and attending/comments are hidden */
     #events-container.list-view .event-col {
         flex: 0 0 100%;
         max-width: 100%;
@@ -242,7 +241,6 @@
         display: none;
     }
 
-    /* Long venue/title: wrap, then cut off at 2 lines so the card never grows past it */
     #events-container.list-view .event-venue span,
     #events-container.list-view .card-title {
         min-width: 0;
@@ -253,7 +251,6 @@
         -webkit-box-orient: vertical;
     }
 
-    /* Compact row: header | venue + title | View button | footer, side by side */
     @media (min-width: 768px) {
         #events-container.list-view .card {
             flex-direction: row;
@@ -284,7 +281,7 @@
             padding-right: 1rem;
         }
 
-        /* Fixed column widths: View button and footer stay in the same spot on every row */
+        
         #events-container.list-view .event-venue {
             flex: 0 0 25%;
             min-width: 0;
@@ -309,7 +306,6 @@
             min-width: 0;
         }
 
-        /* Long author name: single line with "..." */
         #events-container.list-view .card-footer small {
             min-width: 0;
             overflow: hidden;
@@ -320,7 +316,7 @@
 </style>
 
 <script>
-    // Grid/List toggle: switch a "list-view" class on the events row (CSS does the rest).
+    // Grid/List toggle
     var eventsRow = document.getElementById('events-container');
     var gridBtn = document.getElementById('grid-btn');
     var listBtn = document.getElementById('list-btn');
