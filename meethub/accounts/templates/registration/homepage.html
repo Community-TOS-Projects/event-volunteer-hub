@@ -1,6 +1,6 @@
 {% extends 'registration/base1.html' %}
 
-{% block title %}MeetHub - Connect, Meet, Grow{% endblock %}
+{% block title %}Event Volunteer Hub - Connect, Meet, Grow{% endblock %}
 
 {% block content %}
 <style>
@@ -210,7 +210,7 @@
         Connect. Meet. Grow.
     </h1>
     <p class="hero-subtitle">
-        Discover amazing events, meet like-minded people, and build meaningful connections in your community. Join thousands of members already growing their networks through MeetHub.
+        Discover amazing events, meet like-minded people, and build meaningful connections in your community. Join thousands of members already growing their networks through Event Volunteer Hub.
     </p>
     <div class="mt-4">
         <a href="{% url 'accounts:signup' %}" class="btn btn-hero">
@@ -224,6 +224,7 @@
     </div>
 </section>
 
+{% comment %}
 <!-- Stats Section -->
 <section class="stats-section">
     <div class="row">
@@ -253,10 +254,11 @@
         </div>
     </div>
 </section>
+{% endcomment %}
 
 <!-- Features Section -->
 <section id="features" class="mb-5">
-    <h2 class="section-title">Why Choose MeetHub?</h2>
+    <h2 class="section-title">Why Choose Event Volunteer Hub?</h2>
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="feature-card">
@@ -323,6 +325,7 @@
     </div>
 </section>
 
+{% comment %}
 <!-- Testimonials Section -->
 <section class="mb-5">
     <h2 class="section-title">What Our Members Say</h2>
@@ -330,7 +333,7 @@
         <div class="col-lg-4">
             <div class="testimonial-card">
                 <div class="testimonial-text">
-                    "MeetHub helped me find my tribe! I've met some amazing people through the tech meetups and even found my current business partner."
+                    "Event Volunteer Hub helped me find my tribe! I've met some amazing people through the tech meetups and even found my current business partner."
                 </div>
                 <div class="testimonial-author">
                     <i class="fas fa-user-circle me-2"></i>
@@ -341,7 +344,7 @@
         <div class="col-lg-4">
             <div class="testimonial-card">
                 <div class="testimonial-text">
-                    "As someone new to the city, MeetHub was a lifesaver. The hiking group I joined has become my closest friends."
+                    "As someone new to the city, Event Volunteer Hub was a lifesaver. The hiking group I joined has become my closest friends."
                 </div>
                 <div class="testimonial-author">
                     <i class="fas fa-user-circle me-2"></i>
@@ -352,7 +355,7 @@
         <div class="col-lg-4">
             <div class="testimonial-card">
                 <div class="testimonial-text">
-                    "Hosting events through MeetHub is so easy! I've built a thriving photography community with over 200 members."
+                    "Hosting events through Event Volunteer Hub is so easy! I've built a thriving photography community with over 200 members."
                 </div>
                 <div class="testimonial-author">
                     <i class="fas fa-user-circle me-2"></i>
@@ -362,6 +365,7 @@
         </div>
     </div>
 </section>
+{% endcomment %}
 
 <!-- CTA Section -->
 <section class="cta-section">
@@ -369,7 +373,7 @@
         <div class="col-lg-8">
             <h2 class="h1 mb-3">Ready to Start Connecting?</h2>
             <p class="lead mb-0">
-                Join MeetHub today and discover a world of opportunities to meet, learn, and grow with your community.
+                Join Event Volunteer Hub today and discover a world of opportunities to meet, learn, and grow with your community.
             </p>
         </div>
         <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
@@ -385,7 +389,7 @@
 <footer class="text-center text-white-50 mt-5 pt-4 border-top border-light">
     <div class="row">
         <div class="col-md-6 mb-3">
-            <h5 class="text-white">MeetHub</h5>
+            <h5 class="text-white">Event Volunteer Hub</h5>
             <p class="small">Connecting communities, one meetup at a time.</p>
         </div>
         <div class="col-md-6 mb-3">
@@ -406,7 +410,7 @@
         </div>
     </div>
     <div class="text-center pt-3 border-top border-light">
-        <p class="small mb-0">© 2025 MeetHub. All rights reserved.</p>
+        <p class="small mb-0">© 2025 Event Volunteer Hub. All rights reserved.</p>
     </div>
 </footer>
 {% endblock %}
