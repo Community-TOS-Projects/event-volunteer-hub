@@ -34,6 +34,7 @@ class EventListViewTest(TestCase):
                 end_time='13:25:00',
                 category=category,
                 creator=user,
+                capacity=100,
             )
 
     def test_view_url_exists_at_desired_location(self):
@@ -101,6 +102,7 @@ class EventDetailViewTest(TestCase):
             end_time='13:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
 
     def test_detail_of_event(self):
@@ -207,6 +209,7 @@ class EventCreateViewTest(TestCase):
             end_time='13:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
 
     def test_create_event_url_exists_at_desired_location(self):
@@ -247,6 +250,7 @@ class EventCreateViewTest(TestCase):
             end_time='13:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
         response = self.client.get(event.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -298,6 +302,7 @@ class EventUpdateViewTest(TestCase):
             end_time='13:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
 
     def test_update_event_url_exists_at_desired_location(self):
@@ -310,6 +315,7 @@ class EventUpdateViewTest(TestCase):
             end_time='11:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
         self.client.login(username='iyanu@gmail.com', password='12345')
         response = self.client.get(reverse('events:event-update', kwargs={'pk': self.event.pk}))
@@ -383,6 +389,7 @@ class EventDeleteViewTest(TestCase):
             end_time='13:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
 
     def test_delete_event_url_exists_at_desired_location(self):
@@ -395,6 +402,7 @@ class EventDeleteViewTest(TestCase):
             end_time='11:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
         self.client.login(username='iyanu@gmail.com', password='12345')
         response = self.client.get(reverse('events:event-delete', kwargs={'pk': self.event.pk}))
@@ -450,6 +458,7 @@ class AttendEventTestView(TestCase):
             end_time='13:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
 
     def test_attend_event_url_exists_at_desired_location(self):
@@ -462,6 +471,7 @@ class AttendEventTestView(TestCase):
             end_time='11:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
         self.client.login(username='iyanu@gmail.com', password='12345')
         response = self.client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))

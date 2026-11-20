@@ -25,6 +25,7 @@ class EventFormTest(TestCase):
             end_time='13:25:00',
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
 
     def test_event_form_invalid(self):
@@ -36,6 +37,7 @@ class EventFormTest(TestCase):
             'start_time': '12:25:00',
             'end_time': '13:25:00',
             'category': 'category',
+            'capacity': 100,
         })
         self.assertFalse(form.is_valid())
 

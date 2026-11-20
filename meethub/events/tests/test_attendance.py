@@ -27,7 +27,8 @@ class AttendanceTestBase(TestCase):
             name='Party Outside', details='This party is gonna be banging again',
             venue='Mapo Hall', date='2018-05-18',
             start_time='12:25:00', end_time='13:25:00',
-            category=self.category, creator=self.account)
+            category=self.category, creator=self.account, 
+            capacity=100)
 
         # Build the URLs used in the tests
         self.attend_url = reverse(

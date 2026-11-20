@@ -29,6 +29,7 @@ class EventModelTest(TestCase):
             end_time=time(14, 25),
             category=cls.category,
             creator=cls.account,
+            capacity=100,
         )
 
     def test_name_label(self):
@@ -54,6 +55,24 @@ class EventModelTest(TestCase):
     def test_end_time_label(self):
         field_label = self.event._meta.get_field('end_time').verbose_name
         self.assertEqual(field_label, 'end time')
+
+    def test_event_end_time_must_follow_start_time(self):
+        event = Event(
+            name='Invalid Event Time',
+            details='End time equals start time',
+            venue='Mapo Hall',
+            date=date(2018, 5, 18),
+            start_time=time(12, 0),
+            end_time=time(12, 0),
+            category=self.category,
+            creator=self.account,
+            capacity=100,
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            event.save()
+
+        self.assertIn('end_time', error.exception.message_dict)
 
     def test_name_max_length(self):
         max_length = self.event._meta.get_field('name').max_length
@@ -146,6 +165,7 @@ class AttendanceModelTest(TestCase):
             end_time=time(17, 0),
             category=cls.category,
             creator=cls.user,
+            capacity=100,
         )
         cls.shift = Shift.objects.create(
             event=cls.event,
@@ -177,8 +197,19 @@ class AttendanceModelTest(TestCase):
         self.assertEqual(self.shift.capacity, 5)
 
     def test_shift_within_event_time_range(self):
+        event = Event.objects.create(
+            name='Shift Validation Event',
+            details='Validating shift bounds',
+            venue='Convention Center',
+            date=date(2023, 6, 1),
+            start_time=time(9, 0),
+            end_time=time(17, 0),
+            category=self.category,
+            creator=self.user,
+            capacity=100,
+        )
         shift = Shift(
-            event=self.event,
+            event=event,
             name='Within Event',
             start_time=timezone.make_aware(datetime(2023, 6, 1, 10, 0, 0)),
             end_time=timezone.make_aware(datetime(2023, 6, 1, 16, 0, 0)),
@@ -201,6 +232,51 @@ class AttendanceModelTest(TestCase):
         self.assertIn('start_time', error.exception.message_dict)
         self.assertIn('end_time', error.exception.message_dict)
 
+    def test_shifts_for_same_event_cannot_overlap(self):
+        shift = Shift(
+            event=self.event,
+            name='Overlapping Shift',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 10, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 11, 0, 0)),
+            capacity=2,
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            shift.save()
+
+        self.assertIn('start_time', error.exception.message_dict)
+
+    def test_adjacent_shifts_do_not_overlap(self):
+        event = Event.objects.create(
+            name='Adjacent Shift Event',
+            details='Shifts meet at a boundary',
+            venue='Convention Center',
+            date=date(2023, 6, 1),
+            start_time=time(9, 0),
+            end_time=time(17, 0),
+            category=self.category,
+            creator=self.user,
+            capacity=100,
+        )
+        Shift.objects.create(
+            event=event,
+            name='Morning Shift',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 9, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 12, 0, 0)),
+            description='Morning coverage',
+            capacity=2,
+        )
+        afternoon_shift = Shift.objects.create(
+            event=event,
+            name='Afternoon Shift',
+            start_time=timezone.make_aware(datetime(2023, 6, 1, 12, 0, 0)),
+            end_time=timezone.make_aware(datetime(2023, 6, 1, 17, 0, 0)),
+            description='Afternoon coverage',
+            capacity=2,
+        )
+
+        self.assertEqual(afternoon_shift.event, event)
+
     def test_shift_cannot_cross_midnight(self):
         event = Event.objects.create(
             name='Late Event',
@@ -211,6 +287,7 @@ class AttendanceModelTest(TestCase):
             end_time=time(23, 59),
             category=self.category,
             creator=self.user,
+            capacity=100,
         )
         shift = Shift(
             event=event,
@@ -254,7 +331,7 @@ class AttendanceModelTest(TestCase):
             user=volunteer,
             event=self.event,
             shift=self.shift,
-            status=Attendance.StatusChoices.PENDING,
+            status=Attendance.StatusChoices.ATTENDED,
             hours_recorded=0,
         )
         attendance_id = attendance.pk
@@ -265,12 +342,24 @@ class AttendanceModelTest(TestCase):
         self.assertTrue(Event.objects.filter(pk=self.event.pk).exists())
 
     def test_status_choices(self):
-        for status_value, _ in Attendance.StatusChoices.choices:
+        event = Event.objects.create(
+            name='Attendance Status Event',
+            details='Testing attendance statuses',
+            venue='Convention Center',
+            date=date(2023, 6, 1),
+            start_time=time(9, 0),
+            end_time=time(17, 0),
+            category=self.category,
+            creator=self.user,
+            capacity=100,
+        )
+        for index, (status_value, _) in enumerate(Attendance.StatusChoices.choices):
+            start_hour = 9 + (index * 2)
             shift = Shift.objects.create(
-                event=self.event,
+                event=event,
                 name=f'{status_value} Shift',
-                start_time=timezone.make_aware(datetime(2023, 6, 1, 9, 0, 0)),
-                end_time=timezone.make_aware(datetime(2023, 6, 1, 17, 0, 0)),
+                start_time=timezone.make_aware(datetime(2023, 6, 1, start_hour, 0, 0)),
+                end_time=timezone.make_aware(datetime(2023, 6, 1, start_hour + 2, 0, 0)),
                 description=f'{status_value} shift',
                 capacity=5,
             )
@@ -283,4 +372,4 @@ class AttendanceModelTest(TestCase):
             )
             self.assertIn(attendance.status, [choice[0] for choice in Attendance.StatusChoices.choices])
 
-        self.assertEqual(len([choice[0] for choice in Attendance.StatusChoices.choices]), 4)
+        self.assertEqual(len([choice[0] for choice in Attendance.StatusChoices.choices]), 2)

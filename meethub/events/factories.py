@@ -28,7 +28,7 @@ class EventFactory(factory.django.DjangoModelFactory):
     end_time = time(10, 0)
     category = factory.SubFactory(CategoryFactory)
     creator = factory.SubFactory(AccountFactory)
-    num_of_attendees = 1
+    capacity = 100
 
     @factory.post_generation
     def attendees(self, create, extracted, **kwargs):
