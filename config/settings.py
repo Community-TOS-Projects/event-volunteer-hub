@@ -172,6 +172,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Authentication settings
 LOGIN_REDIRECT_URL = '/events'
 
+# Email settings
+# By default, emails print in the terminal instead of being sent.
+# For a real deployment, set EMAIL_BACKEND and the SMTP settings in .env.
+EMAIL_BACKEND = config(
+    'EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend',
+)
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@localhost')
+
 
 # Django-crispy
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

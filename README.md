@@ -174,6 +174,14 @@ http://localhost:8000/admin/
 
 Sign in using the superuser credentials you created.
 
+### Password Reset and Email
+
+Password reset works in local development without any extra setup. Reset emails are printed in the terminal running `python manage.py runserver` instead of being sent, so you can copy the reset link from there. No email account is needed.
+
+For a real deployment, set `EMAIL_BACKEND` (and your email provider's SMTP settings) and `DEFAULT_FROM_EMAIL` in `.env`. See `.env_example`.
+
+**Note:** in the terminal, long links may be split across two lines with an `=` at the end of the first line. Remove the `=` and join the lines before opening the link.
+
 ## Engineering Decisions
 
 Significant engineering decisions are documented in the companion [Event Volunteer Hub Engineering Decision Log](https://github.com/Community-TOS-Projects/event-volunteer-edl).
