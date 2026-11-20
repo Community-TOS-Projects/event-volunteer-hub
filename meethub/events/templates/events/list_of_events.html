@@ -120,13 +120,18 @@
                             <i class="fas fa-user-tie mr-1"></i>by {{ event.creator|capfirst }}
                         </small>
                         <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-secondary">
+                            <button type="button"
+                                    class="btn btn-outline-secondary share-button"
+                                    data-share-url="{% url 'events:event-detail' event.id %}"
+                                    aria-label="Copy link for {{ event.name }}"
+                                    title="Copy event link">
                                 <i class="fas fa-share-alt"></i>
                             </button>
                             <button type="button" class="btn btn-outline-secondary">
                                 <i class="fas fa-bookmark"></i>
                             </button>
                         </div>
+                        <small class="share-feedback text-success ml-2" aria-live="polite"></small>
                     </div>
                 </div>
             </div>
@@ -231,6 +236,12 @@
         border-bottom-left-radius: 0;
     }
 
+    .share-feedback {
+        min-width: 4.5rem;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
     /* List view: each event spans the full row; description and attending/comments are hidden */
     #events-container.list-view .event-col {
         flex: 0 0 100%;
@@ -305,12 +316,12 @@
         }
 
         #events-container.list-view .card-footer {
-            flex: 0 0 240px;
+            flex: 0 0 280px;
             min-width: 0;
         }
 
         /* Long author name: single line with "..." */
-        #events-container.list-view .card-footer small {
+        #events-container.list-view .card-footer .d-flex > small:first-child {
             min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -333,5 +344,36 @@
 
     gridBtn.addEventListener('click', function () { setView(false); });
     listBtn.addEventListener('click', function () { setView(true); });
+
+    var shareButtons = document.querySelectorAll('.share-button');
+
+    shareButtons.forEach(function (shareButton) {
+        shareButton.addEventListener('click', function () {
+            var feedback = shareButton.parentElement.nextElementSibling;
+            var eventUrl = new URL(shareButton.dataset.shareUrl, window.location.origin).href;
+
+            if (!navigator.clipboard || !navigator.clipboard.writeText) {
+                feedback.textContent = 'Copy unavailable';
+                feedback.classList.remove('text-success');
+                feedback.classList.add('text-danger');
+                return;
+            }
+
+            navigator.clipboard.writeText(eventUrl)
+                .then(function () {
+                    feedback.textContent = 'Copied!';
+                    feedback.classList.remove('text-danger');
+                    feedback.classList.add('text-success');
+                    window.setTimeout(function () {
+                        feedback.textContent = '';
+                    }, 2000);
+                })
+                .catch(function () {
+                    feedback.textContent = 'Copy failed';
+                    feedback.classList.remove('text-success');
+                    feedback.classList.add('text-danger');
+                });
+        });
+    });
 </script>
 {% endblock %}
