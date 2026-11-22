@@ -39,7 +39,7 @@ class EventDeletePageTest(TestCase):
     def test_delete_page_shows_event_details(self):
         """The page shows the event's name, date, time, and venue."""
         response = self.client.get(self.delete_url)
-        # Date and time are checked in the formal that the template displays them in
+        # Date and time are checked in the format that the template displays them in
         self.assertContains(response,"Park Cleanup")
         self.assertContains(response, formats.date_format(self.event.date, "DATE_FORMAT"))
         self.assertContains(response, formats.time_format(self.event.time, "TIME_FORMAT"))
