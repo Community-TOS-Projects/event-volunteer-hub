@@ -306,35 +306,67 @@ class EventDeleteViewTest(TestCase):
 class AttendEventTestView(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(username='iyanu', password=12345, email='iyanu@gmail.com')
-        self.attendee = User.objects.create_user(username='tobi', password=56789)
-        self.attendee.save()
-        self.user.save()
+        from django.contrib.auth import get_user_model
+        Account = get_user_model()
+        self.user = Account.objects.create_user(email='iyanu@gmail.com', password='12345')
+        self.attendee = Account.objects.create_user(email='tobi@gmail.com', password='56789')
         self.category = Category.objects.create(name='Technology', description='This is the future')
-        self.event = Event.objects.create(name='Party Outside', details='This party is gonna be banging again',
-                                          venue='Mapo Hall',
-                                          date='2018-05-18', time='12:25:00', category=self.category, creator=self.user)
+        self.event = Event.objects.create(
+            name='Party Outside',
+            details='This party is gonna be banging again',
+            venue='Mapo Hall',
+            date='2018-05-18',
+            time='12:25:00',
+            category=self.category,
+            creator=self.user,
+        )
 
     def test_attend_event_url_exists_at_desired_location(self):
-        event = Event.objects.create(name='Google io', details='Android is coming for you',
-                                          venue='Google Plex',
-                                          date='2018-11-18', time='10:25:00', category=self.category, creator=self.user)
-        self.client.login(username='iyanu', password=12345)
+        self.client.login(email='iyanu@gmail.com', password='12345')
         response = self.client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
         self.assertNotEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email='iyanu@gmail.com', password='12345')
         response = self.client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
         self.assertNotEqual(response.status_code, 200)
 
     def test_attend_event_view_redirect_to_event_detail(self):
-        self.client.login(username='iyanu', password='12345')
+        self.client.login(email='iyanu@gmail.com', password='12345')
         response = self.client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
         self.assertRedirects(response, reverse('events:event-detail', kwargs={'pk': self.event.pk}))
 
+    def test_attend_event_get_request_not_allowed(self):
+        self.client.login(email='iyanu@gmail.com', password='12345')
+        response = self.client.get(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
+        self.assertEqual(response.status_code, 405)
+        self.assertNotIn(self.user, self.event.attendees.all())
 
+    def test_not_attend_event_get_request_not_allowed(self):
+        self.event.attendees.add(self.user)
+        self.client.login(email='iyanu@gmail.com', password='12345')
+        response = self.client.get(reverse('events:not_attend_event', kwargs={'event_id': self.event.id}))
+        self.assertEqual(response.status_code, 405)
+        self.assertIn(self.user, self.event.attendees.all())
 
+    def test_not_attend_event_post_removes_attendee_and_redirects(self):
+        self.event.attendees.add(self.user)
+        self.client.login(email='iyanu@gmail.com', password='12345')
+        response = self.client.post(reverse('events:not_attend_event', kwargs={'event_id': self.event.id}))
+        self.assertRedirects(response, reverse('events:event-detail', kwargs={'pk': self.event.pk}))
+        self.assertNotIn(self.user, self.event.attendees.all())
 
+    def test_attend_event_post_requires_csrf_token(self):
+        from django.test import Client
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.login(email='iyanu@gmail.com', password='12345')
+        response = csrf_client.post(reverse('events:attend_event', kwargs={'event_id': self.event.id}))
+        self.assertEqual(response.status_code, 403)
+        self.assertNotIn(self.user, self.event.attendees.all())
 
-
+    def test_event_detail_renders_post_forms_with_csrf_token(self):
+        self.client.login(email='iyanu@gmail.com', password='12345')
+        response = self.client.get(reverse('events:event-detail', kwargs={'pk': self.event.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'method="post"')
+        self.assertContains(response, 'name="csrfmiddlewaretoken"')

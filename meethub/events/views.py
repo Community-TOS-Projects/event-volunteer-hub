@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
 
 from meethub.actions.utils import create_action
 from meethub.comments.models import Comment
@@ -107,6 +109,7 @@ class EventDelete(LoginRequiredMixin, SuccessMessageMixin, generic.DeleteView):
 
 
 @login_required()
+@require_POST
 def attend_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     attendee = request.user
@@ -117,6 +120,7 @@ def attend_event(request, event_id):
 
 
 @login_required()
+@require_POST
 def not_attend_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     attendee = request.user
