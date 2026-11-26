@@ -203,7 +203,39 @@
             border-radius: 50%;
             border: 2px solid white;
         }
-        
+
+        .event-venue {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .event-venue .d-flex {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .event-venue span {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+
+        .venue-badge {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .venue-badge .d-flex {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .venue-badge span {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            white-space: normal;
+        }
+
         @media (max-width: 768px) {
             .navbar-brand h1 {
                 font-size: 1.5rem;
@@ -308,6 +340,9 @@
       format: 'L' // Local Date
     });
     $('#datetimepicker2').datetimepicker({
+      format: 'LT' // Local Time
+    });
+    $('#datetimepicker3').datetimepicker({
       format: 'LT' // Local Time
     });
   });
