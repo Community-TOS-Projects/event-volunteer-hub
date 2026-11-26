@@ -64,7 +64,7 @@
                         </div>
                         <div class="col-4 text-right">
                             <span class="badge badge-light">
-                                <i class="fas fa-clock mr-1"></i>{{ event.time }}
+                                <i class="fas fa-clock mr-1"></i>{{ event.start_time }}
                             </span>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    
+                     
                     <h4 class="card-title font-weight-bold text-dark mb-3">
                         <a href="{% url 'events:event-detail' event.id %}" class="text-decoration-none text-dark">
                             {{ event.name }}
@@ -87,7 +87,7 @@
                     </h4>
                     
                     <div class="card-text text-muted mb-3 flex-grow-1 event-description">
-                        {{ event.details|safe|truncatewords_html:20 }}
+                        {{ event.details|safe|truncatewords_html:50 }}
                     </div>
                     
                     <div class="mt-auto">
